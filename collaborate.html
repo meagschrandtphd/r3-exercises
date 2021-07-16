@@ -247,6 +247,15 @@ $(document).ready(function () {
 <li>
   <a href="collaborate.html">Collaborate</a>
 </li>
+<li>
+  <a href="manipulate.html">Manipulate</a>
+</li>
+<li>
+  <a href="visualize.html">Visualize</a>
+</li>
+<li>
+  <a href="map.html">Map</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -264,7 +273,509 @@ $(document).ready(function () {
 </div>
 
 
-<p>Like branches of a tree.</p>
+<div id="learning-objectives" class="section level2 unnumbered objectives">
+<h2 class="unnumbered objectives">Learning Objectives</h2>
+<ol style="list-style-type: decimal">
+<li>Create a Github repository (or “repo”).</li>
+<li>Synchronize local files (using <code>git commit</code> &amp; <code>git push</code> plus <code>git pull</code>) with a Github repository.</li>
+<li>Use RStudio’s Git pane.</li>
+<li>Branch and Fork repos.</li>
+<li>Handle file merge conflicts.</li>
+<li>Contribute file changes to any public Github repo with <code>pull request</code>.</li>
+<li>Manage projects in Github with Issues and Project boards. Understand how to reference Issues (e.g. <code>#2</code>) in Github commit messages as well as mention other Github users (e.g. <code>@bbest</code>).</li>
+<li>Write markdown (e.g. <code>README.md</code>) to format text, and yaml (e.g. <code>_site.yml</code>) for configurations.</li>
+<li>Use the 3 components of an Rmarkdown: 1) frontmatter in yaml; 2) markdown text; and 3) R code as chunks or inline.</li>
+<li>Create an Rmarkdown website with a <code>_site.yml</code>.</li>
+</ol>
+</div>
+<div id="prerequisites" class="section level2 unnumbered prereq">
+<h2 class="unnumbered prereq">Prerequisites</h2>
+<p><strong>R Skill Level</strong>: Beginner - you’ve run a few commands in R, hopefully from RStudio.</p>
+</div>
+<div id="background-software-github-workflows" class="section level2">
+<h2>Background: Software &amp; Github Workflows</h2>
+<div id="what-are-git-github" class="section level3">
+<h3>What are Git &amp; Github?</h3>
+<p>The two main version control tools are:</p>
+<ol style="list-style-type: decimal">
+<li><p><a href="https://git-scm.com/"><strong>Git</strong></a> is a command-line version control system that lets you track changes to files over time. These files can be any kind of file (eg doc, pdf, xls), but free text differences are most easily visible (eg txt, csv, md). This facilitates a playground for collaboration, without fear of experimentation (you can always rollback changes).</p></li>
+<li><p><a href="https://github.com/"><strong>Github</strong></a> is a website for storing your git versioned files remotely. It has many nice features to be able visualize differences between <a href="https://help.github.com/articles/rendering-and-diffing-images/">images</a>, <a href="https://help.github.com/articles/mapping-geojson-files-on-github/">rendering</a> &amp; <a href="https://github.com/blog/1772-diffable-more-customizable-maps">diffing</a> map data files, <a href="https://help.github.com/articles/rendering-csv-and-tsv-data/">render text data files</a>, and <a href="https://help.github.com/articles/rendering-differences-in-prose-documents/">track changes in text</a>.</p></li>
+</ol>
+</div>
+<div id="what-are-r-rstudio" class="section level3">
+<h3>What are R &amp; RStudio?</h3>
+<p>The two main programming tools you’ll be using are:</p>
+<ol style="list-style-type: decimal">
+<li><p><a href="https://cran.r-project.org"><strong>R</strong></a> is the scientific programming language.</p></li>
+<li><p><a href="https://www.rstudio.com/products/rstudio/download/#download"><strong>RStudio</strong></a> is the integrated development environment (IDE) that provides a robust coding environment to write and execute R code. I recommend reviewing the 2-page <a href="https://github.com/rstudio/cheatsheets/raw/master/rstudio-ide.pdf">RStudio IDE Cheat Sheet</a> (also available in the RStudio interface through the menu <strong>Help</strong> -&gt; <strong>Cheat Sheets</strong> -&gt; <strong>RStudio IDE Cheat Sheet</strong>) for getting a quick grasp of the panes and keyboard shortcuts.</p></li>
+</ol>
+</div>
+<div id="github-workflows" class="section level3">
+<h3>Github Workflows</h3>
+<p>There are a variety of ways to interact with a Github repository, or <strong>REPO</strong> for short, which is a collection of files, possibly organized within folders. On Github every repo is associated with an <strong>OWNER</strong>, which can be a Github organization or a Github user. Repos are consistently found at <strong>github.com/OWNER/REPO</strong>.</p>
+<p>If you have <em>write</em> permissions to the repo, then you can <code>git push</code> changes to it directly. These changes are always first packaged as a set of file differences by a <code>git commit</code> that requires a message.</p>
+<p>If you do not have <em>write</em> permissions to the repo, then you need to <code>Github fork</code> that repo into your own user-writable space (user or organization). After you make changes to the files in your user-writable repo (with <code>git commit</code> and <code>git push</code>), you can then request those changes be pulled into the original repo with a <code>Github pull request</code>.</p>
+<p>Furthermore, you can <code>git branch</code> a snapshot of the repo files into a <em>sandbox</em> for continuing to make changes, such as to fix a <em>bug</em> or implement a new <em>feature</em>. This branch won’t affect the <em>main</em> branch until you’re ready to <code>git merge</code> those changes, so it isolates development.</p>
+<p>These aspects give rise to different <em>workflows</em> with increasing complexity that we’ll incrementally try out with exercises, so you can become comfortable managing your own code, contributing to other open-source projects, and working on a set of code without trampling on other people’s work.</p>
+<div id="simple-push-pull" class="section level4">
+<h4><strong>Simple</strong>: <code>push</code> &amp; <code>pull</code></h4>
+<p>The simplest workflow for tracking file changes is to simply <code>git push</code> changes into your Github repo, assuming you have <em>write</em> permissions to that repo. If you’re working with anyone else or editing on more than one computer, then you’ll want to <code>git pull</code> changes at the beginning of each session to capture changes and minimize potential <em>conflicts</em> before proceeding with any edits and subsequent <code>git commit</code> and <code>git push</code> commands.</p>
+<p>The exact steps can be described in the table below. After the <code>Github create</code> repo step, you <code>git clone</code> it to get a copy of it onto your machine (with the hidden <code>.git</code> folder containing the configuration). Then you make changes on files and package differences with <code>git commit</code>, which requires a message every time and can happen offline. You’ll need to be online to then run <code>git push</code> to publish those changes back to the Github repo. Then before subsequent changes, you’ll want to update your machine with a <code>git pull</code>.<br />
+</p>
+<table>
+<thead>
+<tr class="header">
+<th>repo location</th>
+<th align="center">initialize <svg viewBox="0 0 448 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path d="M413.1 222.5l22.2 22.2c9.4 9.4 9.4 24.6 0 33.9L241 473c-9.4 9.4-24.6 9.4-33.9 0L12.7 278.6c-9.4-9.4-9.4-24.6 0-33.9l22.2-22.2c9.5-9.5 25-9.3 34.3.4L184 343.4V56c0-13.3 10.7-24 24-24h32c13.3 0 24 10.7 24 24v287.4l114.8-120.5c9.3-9.8 24.8-10 34.3-.4z"></path></svg></th>
+<th align="center">edit <svg viewBox="0 0 448 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path d="M34.9 289.5l-22.2-22.2c-9.4-9.4-9.4-24.6 0-33.9L207 39c9.4-9.4 24.6-9.4 33.9 0l194.3 194.3c9.4 9.4 9.4 24.6 0 33.9L413 289.4c-9.5 9.5-25 9.3-34.3-.4L264 168.6V456c0 13.3-10.7 24-24 24h-32c-13.3 0-24-10.7-24-24V168.6L69.2 289.1c-9.3 9.8-24.8 10-34.3.4z"></path></svg></th>
+<th align="center">update <svg viewBox="0 0 448 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path d="M413.1 222.5l22.2 22.2c9.4 9.4 9.4 24.6 0 33.9L241 473c-9.4 9.4-24.6 9.4-33.9 0L12.7 278.6c-9.4-9.4-9.4-24.6 0-33.9l22.2-22.2c9.5-9.5 25-9.3 34.3.4L184 343.4V56c0-13.3 10.7-24 24-24h32c13.3 0 24 10.7 24 24v287.4l114.8-120.5c9.3-9.8 24.8-10 34.3-.4z"></path></svg></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><svg viewBox="0 0 640 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path d="M537.6 226.6c4.1-10.7 6.4-22.4 6.4-34.6 0-53-43-96-96-96-19.7 0-38.1 6-53.3 16.2C367 64.2 315.3 32 256 32c-88.4 0-160 71.6-160 160 0 2.7.1 5.4.2 8.1C40.2 219.8 0 273.2 0 336c0 79.5 64.5 144 144 144h368c70.7 0 128-57.3 128-128 0-61.9-44-113.6-102.4-125.4z"></path></svg> <code>github.com/OWNER/REPO</code></td>
+<td align="center"><a href="https://help.github.com/articles/create-a-repo/"><strong>create</strong></a> <svg viewBox="0 0 16 16" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" d="M7.75 2a.75.75 0 01.75.75V7h4.25a.75.75 0 110 1.5H8.5v4.25a.75.75 0 11-1.5 0V8.5H2.75a.75.75 0 010-1.5H7V2.75A.75.75 0 017.75 2z"></path></svg></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr class="even">
+<td><svg viewBox="0 0 16 16" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" d="M1.75 2.5h12.5a.25.25 0 01.25.25v7.5a.25.25 0 01-.25.25H1.75a.25.25 0 01-.25-.25v-7.5a.25.25 0 01.25-.25zM14.25 1H1.75A1.75 1.75 0 000 2.75v7.5C0 11.216.784 12 1.75 12h3.727c-.1 1.041-.52 1.872-1.292 2.757A.75.75 0 004.75 16h6.5a.75.75 0 00.565-1.243c-.772-.885-1.193-1.716-1.292-2.757h3.727A1.75 1.75 0 0016 10.25v-7.5A1.75 1.75 0 0014.25 1zM9.018 12H6.982a5.72 5.72 0 01-.765 2.5h3.566a5.72 5.72 0 01-.765-2.5z"></path></svg> <code>~/github/REPO</code></td>
+<td align="center"><a href="https://help.github.com/articles/fetching-a-remote"><strong>clone</strong></a> <svg viewBox="0 0 16 16" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" d="M7.47 10.78a.75.75 0 001.06 0l3.75-3.75a.75.75 0 00-1.06-1.06L8.75 8.44V1.75a.75.75 0 00-1.5 0v6.69L4.78 5.97a.75.75 0 00-1.06 1.06l3.75 3.75zM3.75 13a.75.75 0 000 1.5h8.5a.75.75 0 000-1.5h-8.5z"></path></svg> &nbsp; <svg viewBox="0 0 448 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path d="M190.5 66.9l22.2-22.2c9.4-9.4 24.6-9.4 33.9 0L441 239c9.4 9.4 9.4 24.6 0 33.9L246.6 467.3c-9.4 9.4-24.6 9.4-33.9 0l-22.2-22.2c-9.5-9.5-9.3-25 .4-34.3L311.4 296H24c-13.3 0-24-10.7-24-24v-32c0-13.3 10.7-24 24-24h287.4L190.9 101.2c-9.8-9.3-10-24.8-.4-34.3z"></path></svg></td>
+<td align="center"><a href="http://git-scm.com/docs/git-commit"><strong>commit</strong></a> <svg viewBox="0 0 16 16" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" d="M10.5 7.75a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zm1.43.75a4.002 4.002 0 01-7.86 0H.75a.75.75 0 110-1.5h3.32a4.001 4.001 0 017.86 0h3.32a.75.75 0 110 1.5h-3.32z"></path></svg>, <a href="https://help.github.com/articles/pushing-to-a-remote/"><strong>push</strong></a> <svg viewBox="0 0 640 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path d="M537.6 226.6c4.1-10.7 6.4-22.4 6.4-34.6 0-53-43-96-96-96-19.7 0-38.1 6-53.3 16.2C367 64.2 315.3 32 256 32c-88.4 0-160 71.6-160 160 0 2.7.1 5.4.2 8.1C40.2 219.8 0 273.2 0 336c0 79.5 64.5 144 144 144h368c70.7 0 128-57.3 128-128 0-61.9-44-113.6-102.4-125.4zM393.4 288H328v112c0 8.8-7.2 16-16 16h-48c-8.8 0-16-7.2-16-16V288h-65.4c-14.3 0-21.4-17.2-11.3-27.3l105.4-105.4c6.2-6.2 16.4-6.2 22.6 0l105.4 105.4c10.1 10.1 2.9 27.3-11.3 27.3z"></path></svg></td>
+<td align="center"><a href="https://help.github.com/articles/fetching-a-remote/#pull"><strong>pull</strong></a> <svg viewBox="0 0 640 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path d="M537.6 226.6c4.1-10.7 6.4-22.4 6.4-34.6 0-53-43-96-96-96-19.7 0-38.1 6-53.3 16.2C367 64.2 315.3 32 256 32c-88.4 0-160 71.6-160 160 0 2.7.1 5.4.2 8.1C40.2 219.8 0 273.2 0 336c0 79.5 64.5 144 144 144h368c70.7 0 128-57.3 128-128 0-61.9-44-113.6-102.4-125.4zm-132.9 88.7L299.3 420.7c-6.2 6.2-16.4 6.2-22.6 0L171.3 315.3c-10.1-10.1-2.9-27.3 11.3-27.3H248V176c0-8.8 7.2-16 16-16h48c8.8 0 16 7.2 16 16v112h65.4c14.2 0 21.4 17.2 11.3 27.3z"></path></svg></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="contribute-fork-pull-request" class="section level4">
+<h4><strong>Contribute</strong>: <code>fork</code> &amp; <code>pull request</code></h4>
+<p>If you don’t have <em>write</em> access to a Github repo, such as with any open-source project, then you can <code>Github fork</code> somebody else’s repo into your own user-writable space (i.e. OWNER being a Github user or organization) where you have write permissions. There you can make changes (using <code>git commit</code> and <code>git push</code>). When you’re ready to submit changes to the original repo, you make a <code>pull request</code> queuing these changes up for the owner(s) of the original repo to review and accept with a <code>merge</code>, reject or ignore. Github facilitates the conversation that may follow, including the ability to update the <code>pull request</code> before performing the final <code>merge</code>.</p>
+<table>
+<colgroup>
+<col width="8%" />
+<col width="3%" />
+<col width="22%" />
+<col width="29%" />
+<col width="35%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>repo location</th>
+<th align="center"><code>USER</code> permission</th>
+<th align="center">initialize <svg viewBox="0 0 448 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path d="M413.1 222.5l22.2 22.2c9.4 9.4 9.4 24.6 0 33.9L241 473c-9.4 9.4-24.6 9.4-33.9 0L12.7 278.6c-9.4-9.4-9.4-24.6 0-33.9l22.2-22.2c9.5-9.5 25-9.3 34.3.4L184 343.4V56c0-13.3 10.7-24 24-24h32c13.3 0 24 10.7 24 24v287.4l114.8-120.5c9.3-9.8 24.8-10 34.3-.4z"></path></svg></th>
+<th align="center">edit <svg viewBox="0 0 448 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path d="M34.9 289.5l-22.2-22.2c-9.4-9.4-9.4-24.6 0-33.9L207 39c9.4-9.4 24.6-9.4 33.9 0l194.3 194.3c9.4 9.4 9.4 24.6 0 33.9L413 289.4c-9.5 9.5-25 9.3-34.3-.4L264 168.6V456c0 13.3-10.7 24-24 24h-32c-13.3 0-24-10.7-24-24V168.6L69.2 289.1c-9.3 9.8-24.8 10-34.3.4z"></path></svg></th>
+<th align="center">update <svg viewBox="0 0 448 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path d="M413.1 222.5l22.2 22.2c9.4 9.4 9.4 24.6 0 33.9L241 473c-9.4 9.4-24.6 9.4-33.9 0L12.7 278.6c-9.4-9.4-9.4-24.6 0-33.9l22.2-22.2c9.5-9.5 25-9.3 34.3.4L184 343.4V56c0-13.3 10.7-24 24-24h32c13.3 0 24 10.7 24 24v287.4l114.8-120.5c9.3-9.8 24.8-10 34.3-.4z"></path></svg></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><svg viewBox="0 0 640 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path d="M537.6 226.6c4.1-10.7 6.4-22.4 6.4-34.6 0-53-43-96-96-96-19.7 0-38.1 6-53.3 16.2C367 64.2 315.3 32 256 32c-88.4 0-160 71.6-160 160 0 2.7.1 5.4.2 8.1C40.2 219.8 0 273.2 0 336c0 79.5 64.5 144 144 144h368c70.7 0 128-57.3 128-128 0-61.9-44-113.6-102.4-125.4z"></path></svg> <code>github.com/OTHER/REPO</code></td>
+<td align="center">read only</td>
+<td align="center"></td>
+<td align="center"><a href="https://help.github.com/articles/merging-a-pull-request"><strong>merge</strong></a> <svg viewBox="0 0 16 16" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" d="M5 3.254V3.25v.005a.75.75 0 110-.005v.004zm.45 1.9a2.25 2.25 0 10-1.95.218v5.256a2.25 2.25 0 101.5 0V7.123A5.735 5.735 0 009.25 9h1.378a2.251 2.251 0 100-1.5H9.25a4.25 4.25 0 01-3.8-2.346zM12.75 9a.75.75 0 100-1.5.75.75 0 000 1.5zm-8.5 4.5a.75.75 0 100-1.5.75.75 0 000 1.5z"></path></svg></td>
+<td align="center"></td>
+</tr>
+<tr class="even">
+<td><svg viewBox="0 0 640 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path d="M537.6 226.6c4.1-10.7 6.4-22.4 6.4-34.6 0-53-43-96-96-96-19.7 0-38.1 6-53.3 16.2C367 64.2 315.3 32 256 32c-88.4 0-160 71.6-160 160 0 2.7.1 5.4.2 8.1C40.2 219.8 0 273.2 0 336c0 79.5 64.5 144 144 144h368c70.7 0 128-57.3 128-128 0-61.9-44-113.6-102.4-125.4z"></path></svg> <code>github.com/OWNER/REPO</code></td>
+<td align="center">read + write</td>
+<td align="center"><a href="https://help.github.com/articles/fork-a-repo"><strong>fork</strong></a> <svg viewBox="0 0 16 16" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" d="M5 3.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm0 2.122a2.25 2.25 0 10-1.5 0v.878A2.25 2.25 0 005.75 8.5h1.5v2.128a2.251 2.251 0 101.5 0V8.5h1.5a2.25 2.25 0 002.25-2.25v-.878a2.25 2.25 0 10-1.5 0v.878a.75.75 0 01-.75.75h-4.5A.75.75 0 015 6.25v-.878zm3.75 7.378a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm3-8.75a.75.75 0 100-1.5.75.75 0 000 1.5z"></path></svg></td>
+<td align="center"><a href="https://help.github.com/articles/creating-a-pull-request/"><strong>pull request</strong></a> <svg viewBox="0 0 16 16" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" d="M7.177 3.073L9.573.677A.25.25 0 0110 .854v4.792a.25.25 0 01-.427.177L7.177 3.427a.25.25 0 010-.354zM3.75 2.5a.75.75 0 100 1.5.75.75 0 000-1.5zm-2.25.75a2.25 2.25 0 113 2.122v5.256a2.251 2.251 0 11-1.5 0V5.372A2.25 2.25 0 011.5 3.25zM11 2.5h-1V4h1a1 1 0 011 1v5.628a2.251 2.251 0 101.5 0V5A2.5 2.5 0 0011 2.5zm1 10.25a.75.75 0 111.5 0 .75.75 0 01-1.5 0zM3.75 12a.75.75 0 100 1.5.75.75 0 000-1.5z"></path></svg></td>
+<td align="center"><a href="https://help.github.com/articles/creating-a-pull-request/"><strong>pull request</strong></a> <svg viewBox="0 0 16 16" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" d="M7.177 3.073L9.573.677A.25.25 0 0110 .854v4.792a.25.25 0 01-.427.177L7.177 3.427a.25.25 0 010-.354zM3.75 2.5a.75.75 0 100 1.5.75.75 0 000-1.5zm-2.25.75a2.25 2.25 0 113 2.122v5.256a2.251 2.251 0 11-1.5 0V5.372A2.25 2.25 0 011.5 3.25zM11 2.5h-1V4h1a1 1 0 011 1v5.628a2.251 2.251 0 101.5 0V5A2.5 2.5 0 0011 2.5zm1 10.25a.75.75 0 111.5 0 .75.75 0 01-1.5 0zM3.75 12a.75.75 0 100 1.5.75.75 0 000-1.5z"></path></svg>, <a href="https://help.github.com/articles/merging-a-pull-request"><strong>merge</strong></a> <svg viewBox="0 0 16 16" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" d="M5 3.254V3.25v.005a.75.75 0 110-.005v.004zm.45 1.9a2.25 2.25 0 10-1.95.218v5.256a2.25 2.25 0 101.5 0V7.123A5.735 5.735 0 009.25 9h1.378a2.251 2.251 0 100-1.5H9.25a4.25 4.25 0 01-3.8-2.346zM12.75 9a.75.75 0 100-1.5.75.75 0 000 1.5zm-8.5 4.5a.75.75 0 100-1.5.75.75 0 000 1.5z"></path></svg></td>
+</tr>
+<tr class="odd">
+<td><svg viewBox="0 0 16 16" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" d="M1.75 2.5h12.5a.25.25 0 01.25.25v7.5a.25.25 0 01-.25.25H1.75a.25.25 0 01-.25-.25v-7.5a.25.25 0 01.25-.25zM14.25 1H1.75A1.75 1.75 0 000 2.75v7.5C0 11.216.784 12 1.75 12h3.727c-.1 1.041-.52 1.872-1.292 2.757A.75.75 0 004.75 16h6.5a.75.75 0 00.565-1.243c-.772-.885-1.193-1.716-1.292-2.757h3.727A1.75 1.75 0 0016 10.25v-7.5A1.75 1.75 0 0014.25 1zM9.018 12H6.982a5.72 5.72 0 01-.765 2.5h3.566a5.72 5.72 0 01-.765-2.5z"></path></svg> <code>~/github/REPO</code></td>
+<td align="center">read + write</td>
+<td align="center"><a href="https://help.github.com/articles/fetching-a-remote"><strong>clone</strong></a> <svg viewBox="0 0 16 16" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" d="M15 0H9v7c0 .55.45 1 1 1h1v1h1V8h3c.55 0 1-.45 1-1V1c0-.55-.45-1-1-1zm-4 7h-1V6h1v1zm4 0h-3V6h3v1zm0-2h-4V1h4v4zM4 5H3V4h1v1zm0-2H3V2h1v1zM2 1h6V0H1C.45 0 0 .45 0 1v12c0 .55.45 1 1 1h2v2l1.5-1.5L6 16v-2h5c.55 0 1-.45 1-1v-3H2V1zm9 10v2H6v-1H3v1H1v-2h10zM3 8h1v1H3V8zm1-1H3V6h1v1z"></path></svg> &nbsp; <svg viewBox="0 0 448 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path d="M190.5 66.9l22.2-22.2c9.4-9.4 24.6-9.4 33.9 0L441 239c9.4 9.4 9.4 24.6 0 33.9L246.6 467.3c-9.4 9.4-24.6 9.4-33.9 0l-22.2-22.2c-9.5-9.5-9.3-25 .4-34.3L311.4 296H24c-13.3 0-24-10.7-24-24v-32c0-13.3 10.7-24 24-24h287.4L190.9 101.2c-9.8-9.3-10-24.8-.4-34.3z"></path></svg></td>
+<td align="center"><a href="http://git-scm.com/docs/git-commit"><strong>commit</strong></a> <svg viewBox="0 0 16 16" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" d="M10.5 7.75a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zm1.43.75a4.002 4.002 0 01-7.86 0H.75a.75.75 0 110-1.5h3.32a4.001 4.001 0 017.86 0h3.32a.75.75 0 110 1.5h-3.32z"></path></svg>, <a href="https://help.github.com/articles/pushing-to-a-remote/"><strong>push</strong></a> <svg viewBox="0 0 640 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path d="M537.6 226.6c4.1-10.7 6.4-22.4 6.4-34.6 0-53-43-96-96-96-19.7 0-38.1 6-53.3 16.2C367 64.2 315.3 32 256 32c-88.4 0-160 71.6-160 160 0 2.7.1 5.4.2 8.1C40.2 219.8 0 273.2 0 336c0 79.5 64.5 144 144 144h368c70.7 0 128-57.3 128-128 0-61.9-44-113.6-102.4-125.4zM393.4 288H328v112c0 8.8-7.2 16-16 16h-48c-8.8 0-16-7.2-16-16V288h-65.4c-14.3 0-21.4-17.2-11.3-27.3l105.4-105.4c6.2-6.2 16.4-6.2 22.6 0l105.4 105.4c10.1 10.1 2.9 27.3-11.3 27.3z"></path></svg></td>
+<td align="center"><a href="https://help.github.com/articles/fetching-a-remote/#pull"><strong>pull</strong></a> <svg viewBox="0 0 640 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path d="M537.6 226.6c4.1-10.7 6.4-22.4 6.4-34.6 0-53-43-96-96-96-19.7 0-38.1 6-53.3 16.2C367 64.2 315.3 32 256 32c-88.4 0-160 71.6-160 160 0 2.7.1 5.4.2 8.1C40.2 219.8 0 273.2 0 336c0 79.5 64.5 144 144 144h368c70.7 0 128-57.3 128-128 0-61.9-44-113.6-102.4-125.4zm-132.9 88.7L299.3 420.7c-6.2 6.2-16.4 6.2-22.6 0L171.3 315.3c-10.1-10.1-2.9-27.3 11.3-27.3H248V176c0-8.8 7.2-16 16-16h48c8.8 0 16 7.2 16 16v112h65.4c14.2 0 21.4 17.2 11.3 27.3z"></path></svg></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="sandbox-branch-merge" class="section level4">
+<h4><strong>Sandbox</strong>: <code>branch</code> &amp; <code>merge</code></h4>
+<p>Even if you’re able to <em>write</em> directly to the repo, you may be collaborating with others and not want to step on their proverbial coding toes. By performing a <code>git branch</code>, you’re taking a snapshot of the files and isolating them into your own <em>sandbox</em>. For instance let’s say you’re working on a new feature, then you might call your branch generically <em>new-feature</em>. Subsequent changes to the files in the Github repo (with <code>git commit</code> and <code>git push</code>) do not then affect the <em>main</em> branch until a <code>git merge</code> is executed to fold these changes of <em>new-feature</em> into the <em>main</em> branch.</p>
+<table>
+<thead>
+<tr class="header">
+<th>repo location</th>
+<th align="center"><code>USER</code> permission</th>
+<th align="center">initialize <svg viewBox="0 0 448 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path d="M413.1 222.5l22.2 22.2c9.4 9.4 9.4 24.6 0 33.9L241 473c-9.4 9.4-24.6 9.4-33.9 0L12.7 278.6c-9.4-9.4-9.4-24.6 0-33.9l22.2-22.2c9.5-9.5 25-9.3 34.3.4L184 343.4V56c0-13.3 10.7-24 24-24h32c13.3 0 24 10.7 24 24v287.4l114.8-120.5c9.3-9.8 24.8-10 34.3-.4z"></path></svg></th>
+<th align="center">edit <svg viewBox="0 0 448 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path d="M34.9 289.5l-22.2-22.2c-9.4-9.4-9.4-24.6 0-33.9L207 39c9.4-9.4 24.6-9.4 33.9 0l194.3 194.3c9.4 9.4 9.4 24.6 0 33.9L413 289.4c-9.5 9.5-25 9.3-34.3-.4L264 168.6V456c0 13.3-10.7 24-24 24h-32c-13.3 0-24-10.7-24-24V168.6L69.2 289.1c-9.3 9.8-24.8 10-34.3.4z"></path></svg></th>
+<th align="center">update <svg viewBox="0 0 448 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path d="M413.1 222.5l22.2 22.2c9.4 9.4 9.4 24.6 0 33.9L241 473c-9.4 9.4-24.6 9.4-33.9 0L12.7 278.6c-9.4-9.4-9.4-24.6 0-33.9l22.2-22.2c9.5-9.5 25-9.3 34.3.4L184 343.4V56c0-13.3 10.7-24 24-24h32c13.3 0 24 10.7 24 24v287.4l114.8-120.5c9.3-9.8 24.8-10 34.3-.4z"></path></svg></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><svg viewBox="0 0 640 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path d="M537.6 226.6c4.1-10.7 6.4-22.4 6.4-34.6 0-53-43-96-96-96-19.7 0-38.1 6-53.3 16.2C367 64.2 315.3 32 256 32c-88.4 0-160 71.6-160 160 0 2.7.1 5.4.2 8.1C40.2 219.8 0 273.2 0 336c0 79.5 64.5 144 144 144h368c70.7 0 128-57.3 128-128 0-61.9-44-113.6-102.4-125.4z"></path></svg> <code>github.com/OWNER/REPO</code> branch: <em>main</em></td>
+<td align="center">read + write</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr class="even">
+<td><svg viewBox="0 0 16 16" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" d="M1.75 2.5h12.5a.25.25 0 01.25.25v7.5a.25.25 0 01-.25.25H1.75a.25.25 0 01-.25-.25v-7.5a.25.25 0 01.25-.25zM14.25 1H1.75A1.75 1.75 0 000 2.75v7.5C0 11.216.784 12 1.75 12h3.727c-.1 1.041-.52 1.872-1.292 2.757A.75.75 0 004.75 16h6.5a.75.75 0 00.565-1.243c-.772-.885-1.193-1.716-1.292-2.757h3.727A1.75 1.75 0 0016 10.25v-7.5A1.75 1.75 0 0014.25 1zM9.018 12H6.982a5.72 5.72 0 01-.765 2.5h3.566a5.72 5.72 0 01-.765-2.5z"></path></svg> <code>~/github/REPO</code> branch: <em>main</em></td>
+<td align="center">read + write</td>
+<td align="center"><a href="https://help.github.com/articles/fetching-a-remote"><strong>clone</strong></a> <svg viewBox="0 0 16 16" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" d="M15 0H9v7c0 .55.45 1 1 1h1v1h1V8h3c.55 0 1-.45 1-1V1c0-.55-.45-1-1-1zm-4 7h-1V6h1v1zm4 0h-3V6h3v1zm0-2h-4V1h4v4zM4 5H3V4h1v1zm0-2H3V2h1v1zM2 1h6V0H1C.45 0 0 .45 0 1v12c0 .55.45 1 1 1h2v2l1.5-1.5L6 16v-2h5c.55 0 1-.45 1-1v-3H2V1zm9 10v2H6v-1H3v1H1v-2h10zM3 8h1v1H3V8zm1-1H3V6h1v1z"></path></svg></td>
+<td align="center"><a href="https://www.atlassian.com/git/tutorials/using-branches/git-merge"><strong>merge</strong></a> <svg viewBox="0 0 16 16" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" d="M5 3.254V3.25v.005a.75.75 0 110-.005v.004zm.45 1.9a2.25 2.25 0 10-1.95.218v5.256a2.25 2.25 0 101.5 0V7.123A5.735 5.735 0 009.25 9h1.378a2.251 2.251 0 100-1.5H9.25a4.25 4.25 0 01-3.8-2.346zM12.75 9a.75.75 0 100-1.5.75.75 0 000 1.5zm-8.5 4.5a.75.75 0 100-1.5.75.75 0 000 1.5z"></path></svg>, <a href="https://help.github.com/articles/pushing-to-a-remote/"><strong>push</strong></a> <svg viewBox="0 0 640 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path d="M537.6 226.6c4.1-10.7 6.4-22.4 6.4-34.6 0-53-43-96-96-96-19.7 0-38.1 6-53.3 16.2C367 64.2 315.3 32 256 32c-88.4 0-160 71.6-160 160 0 2.7.1 5.4.2 8.1C40.2 219.8 0 273.2 0 336c0 79.5 64.5 144 144 144h368c70.7 0 128-57.3 128-128 0-61.9-44-113.6-102.4-125.4zM393.4 288H328v112c0 8.8-7.2 16-16 16h-48c-8.8 0-16-7.2-16-16V288h-65.4c-14.3 0-21.4-17.2-11.3-27.3l105.4-105.4c6.2-6.2 16.4-6.2 22.6 0l105.4 105.4c10.1 10.1 2.9 27.3-11.3 27.3z"></path></svg></td>
+<td align="center"></td>
+</tr>
+<tr class="odd">
+<td><svg viewBox="0 0 16 16" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" d="M1.75 2.5h12.5a.25.25 0 01.25.25v7.5a.25.25 0 01-.25.25H1.75a.25.25 0 01-.25-.25v-7.5a.25.25 0 01.25-.25zM14.25 1H1.75A1.75 1.75 0 000 2.75v7.5C0 11.216.784 12 1.75 12h3.727c-.1 1.041-.52 1.872-1.292 2.757A.75.75 0 004.75 16h6.5a.75.75 0 00.565-1.243c-.772-.885-1.193-1.716-1.292-2.757h3.727A1.75 1.75 0 0016 10.25v-7.5A1.75 1.75 0 0014.25 1zM9.018 12H6.982a5.72 5.72 0 01-.765 2.5h3.566a5.72 5.72 0 01-.765-2.5z"></path></svg> <code>~/github/REPO</code> branch: <em>new-feature</em></td>
+<td align="center">read + write</td>
+<td align="center"><a href="https://www.atlassian.com/git/tutorials/using-branches"><strong>branch</strong></a> <svg viewBox="0 0 16 16" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 100 1.5.75.75 0 000-1.5zm-2.25.75a2.25 2.25 0 113 2.122V6A2.5 2.5 0 0110 8.5H6a1 1 0 00-1 1v1.128a2.251 2.251 0 11-1.5 0V5.372a2.25 2.25 0 111.5 0v1.836A2.492 2.492 0 016 7h4a1 1 0 001-1v-.628A2.25 2.25 0 019.5 3.25zM4.25 12a.75.75 0 100 1.5.75.75 0 000-1.5zM3.5 3.25a.75.75 0 111.5 0 .75.75 0 01-1.5 0z"></path></svg> &nbsp; <svg viewBox="0 0 448 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path d="M190.5 66.9l22.2-22.2c9.4-9.4 24.6-9.4 33.9 0L441 239c9.4 9.4 9.4 24.6 0 33.9L246.6 467.3c-9.4 9.4-24.6 9.4-33.9 0l-22.2-22.2c-9.5-9.5-9.3-25 .4-34.3L311.4 296H24c-13.3 0-24-10.7-24-24v-32c0-13.3 10.7-24 24-24h287.4L190.9 101.2c-9.8-9.3-10-24.8-.4-34.3z"></path></svg></td>
+<td align="center"><a href="http://git-scm.com/docs/git-commit"><strong>commit</strong></a> <svg viewBox="0 0 16 16" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" d="M10.5 7.75a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zm1.43.75a4.002 4.002 0 01-7.86 0H.75a.75.75 0 110-1.5h3.32a4.001 4.001 0 017.86 0h3.32a.75.75 0 110 1.5h-3.32z"></path></svg></td>
+<td align="center"><a href="https://help.github.com/articles/fetching-a-remote/#pull"><strong>pull</strong></a> <svg viewBox="0 0 640 512" style="height:1em;position:relative;display:inline-block;top:.1em;" xmlns="http://www.w3.org/2000/svg"> <path d="M537.6 226.6c4.1-10.7 6.4-22.4 6.4-34.6 0-53-43-96-96-96-19.7 0-38.1 6-53.3 16.2C367 64.2 315.3 32 256 32c-88.4 0-160 71.6-160 160 0 2.7.1 5.4.2 8.1C40.2 219.8 0 273.2 0 336c0 79.5 64.5 144 144 144h368c70.7 0 128-57.3 128-128 0-61.9-44-113.6-102.4-125.4zm-132.9 88.7L299.3 420.7c-6.2 6.2-16.4 6.2-22.6 0L171.3 315.3c-10.1-10.1-2.9-27.3 11.3-27.3H248V176c0-8.8 7.2-16 16-16h48c8.8 0 16 7.2 16 16v112h65.4c14.2 0 21.4 17.2 11.3 27.3z"></path></svg></td>
+</tr>
+</tbody>
+</table>
+<p>The scenario above shows the <code>branch</code> and <code>merge</code> happening locally, but you can also execute these on Github. The RStudio IDE provides the ability to create a new branch locally, but then to perform the <code>git merge</code> you need to do this in its Terminal.</p>
+</div>
+<div id="pro-branch-pull-request-merge" class="section level4">
+<h4><strong>Pro</strong>: <code>branch</code>, <code>pull request</code> &amp; <code>merge</code></h4>
+<p>Extending the <strong>Sandbox</strong> workflow to full “professional” status, even if you have the administrative ability on the repo to perform a <code>git merge</code> you may wish to first advertise your proposed file changes to other contributors with a <code>pull request</code>. This then allows others to review and discuss changes before an admin then performs the final <code>git merge</code>. This is the recommended workflow described in <a href="https://guides.github.com/introduction/flow/">Understanding the GitHub flow · GitHub Guides</a>:</p>
+<p><img src="figs/github_flow.png" width="600"/></p>
+<p>We want go over this entire workflow in this lesson, but it simply combines all the techniques above.</p>
+</div>
+</div>
+</div>
+<div id="setup-github-git-rstudio" class="section level2">
+<h2>Setup Github &amp; Git &amp; RStudio</h2>
+<ol style="list-style-type: decimal">
+<li><p>Create <strong>Github</strong> account at <a href="http://github.com" class="uri">http://github.com</a>, if you don’t already have one. For username, I recommend all lower-case letters, short as you can. If you use an email ending in <code>.edu</code>, you can request free private repositories via <a href="https://education.github.com/">GitHub Education</a> discount.</p></li>
+<li><p>Install the latest software, per <a href="./setup.html">Setup</a>:</p>
+<ol style="list-style-type: decimal">
+<li><a href="https://cran.r-project.org"><strong>R</strong></a> scientific programming language</li>
+<li><a href="https://www.rstudio.com/products/rstudio/download/#download"><strong>RStudio</strong></a> integrated development environment</li>
+<li><a href="https://git-scm.com/"><strong>Git</strong></a> version control<br />
+<br />
+</li>
+</ol></li>
+<li><p>Configure <strong>git</strong> with global commands to tell it who you are. Open the Terminal in RStudio and type the following. Be sure to replace <code>USER</code> and <code>USER@SOMEWHERE.ORG</code> with yours (e.g. mine is <code>bbest</code> and <code>ben@ecoquants.com</code>):</p>
+<pre class="bash"><code># display your version of git
+git --version
+# display the path to git on Mac/Linux
+which git
+# display the path to git on Windows
+where git
+# replace USER with your Github user account
+git config –-global user.name USER
+# replace USER@SOMEWHERE.ORG with the email you used to register with Github
+git config –-global user.email USER@SOMEWHERE.ORG
+# use git merge (default) instead of git rebase to resolve git pull conflicts
+git config --global pull.rebase true
+# list your config to confirm user.* variables set
+git config --list</code></pre></li>
+<li><p>Tell <strong>RStudio</strong> where to find <strong>Git</strong>. In the RStudio menu, go to <strong>Tools</strong> -&gt; <strong>Global Options</strong> and select the <strong>Git/SVN</strong> sidebar menu:</p>
+<p><img src="figs/rstudio_setup-git.png" width="400"/></p>
+<p>Here you <strong>Browse</strong> and select the <strong>Git executable</strong> based on the path found from the above commands dependening on your operating system in the Terminal (<code>which git</code> on Mac/Linux; <code>where git</code> on Windows).</p>
+<p>If you run into any problems, please consult more thorough documentation in <a href="https://happygitwithr.com/rstudio-see-git.html#tell-rstudio-where-to-find-git">Chapter 13 Detect Git from RStudio | Happy Git and GitHub for the useR</a>. If you’re still stuck, please email me <a href="mailto:ben@ecoquants.com" class="email">ben@ecoquants.com</a> or better yet look at existing <a href="https://github.com/noaa-iea/r3-train/issues">Issues · noaa-iea/r3-train</a> and from there <strong>Create a new issue</strong> describing the problem, any error messages and the operating system with version numbers of software being used.</p></li>
+</ol>
+</div>
+<div id="create-github-repository-r3-exercises" class="section level2">
+<h2>Create Github Repository <em>r3-exercises</em></h2>
+<p>Now you will create a Github repository. This will be the source code of an Rmarkdown website that will house your work completing all the exercises for this course.</p>
+<ol style="list-style-type: decimal">
+<li><p>With your web browser, sign into <a href="https://github.com">Github.com</a> and visit your Github user page (i.e. <code>https://github.com/USER</code>) and <a href="https://help.github.com/articles/create-a-repo/">Create a repository</a> called <code>r3-exercises</code>.</p>
+<p><img src="figs/github_repo-create.png" width="200"/></p>
+<p>Please tick the box to <strong>Add a README file</strong>. I optionally included “Exercises from <a href="https://noaa-iea.github.io/r3-train" class="uri">https://noaa-iea.github.io/r3-train</a>” in the <strong>Description</strong>. Otherwise the defaults are fine.</p>
+<p><img src="figs/github_create_r3-exercises.png" width="600"/></p></li>
+</ol>
+<p>You should now see this repo at <code>https://github.com/USER/r3-exercises</code>.</p>
+<p><img src="figs/github_initial_r3-exercises.png" width="600"/></p>
+</div>
+<div id="readme.md" class="section level2 unnumbered callout">
+<h2 class="unnumbered callout"><code>README.md</code></h2>
+<p>Notice that the only file in the repo so far is the <code>README.md</code>, which is in <strong><em>markdown</em></strong> format (<code>.md</code>) and its contents are displayed directly below, which is the special case for any <code>README.md</code> file in a Github folder. Clicking on the pencil icon to edit, reveals the source for this file:</p>
+<pre class="md"><code># r3-exercises
+Exercises from https://noaa-iea.github.io/r3-train</code></pre>
+<p>Clicking on the <strong>Preview</strong> tab shows the formatted result. Note how the <code>#</code> is used to create a header and the link is automatically generated:</p>
+<p><img src="figs/github_readme.md-preview.png" width="400"/></p>
+<p>For more on formatting text with markdown within Github, check out <a href="https://guides.github.com/features/mastering-markdown/">Mastering Markdown · GitHub Guides</a>.</p>
+</div>
+<div id="create-rstudio-project" class="section level2">
+<h2>Create RStudio Project</h2>
+<p>Next, you’ll use RStudio to initialize this project in two important ways:</p>
+<ol style="list-style-type: decimal">
+<li><p>You’ll let RStudio run <code>git clone</code> to copy the git repository onto your machine containing the <code>README.md</code> and importantly a hidden folder <code>.git/</code> which contains all file history and the configuration on where to synchronize files, i.e. Github.</p></li>
+<li><p>By creating an <strong>RStudio Project</strong>, you’ll create an <code>r3-exercises.Rproj</code> file. This will be an executable that you can double-click on from Windows Explorer or Mac Finder that will open RStudio and set the working directory to that containing folder. This assures that others who similarly open the project will start with the same working directory, so relative paths to other files in the repo will work regardless of where that repo lives on an individual machine. This is important for making your R code portable for others to use.</p></li>
+</ol>
+<p>From <strong>RStudio</strong> menu <strong>File</strong> -&gt; <strong>New Project…</strong></p>
+<p><img src="figs/rstudio_new-project.png" width="500"/></p>
+<p>Choose <strong>Version Control</strong> -&gt; <strong>git</strong> and enter the <strong>Repository URL</strong> with the <code>.git</code> extension.</p>
+<p><img src="figs/rstudio_clone-repo.png" width="500"/></p>
+<p>This <strong>Repository URL</strong> is also easily copied into your clipboard from your web <strong>browser</strong> by clicking on the green Code button of your new repository (i.e. <code>https://github.com/USER/r3-exercises</code>):</p>
+<p><img src="figs/github_code-clone.png" width="400"/></p>
+<p>Then paste (Ctrl + V) into the <strong>Repository URL</strong> field of the form.</p>
+<p>I chose to Create the project as a subdirectory of <code>~/github/bbest</code> which means my home directory (<code>~</code>) and subfolder <code>bbest</code> of folder <code>github</code>, but you can create it wherever makes sense on your computer. Be sure to swap any instance of USER <code>bbest</code> with your Github username.</p>
+<p>If it all works correctly then you should see the files downloaded and showing up in the <strong>Files</strong> pane of RStudio. If RStudio is configured correctly to work with <strong>Git</strong>, then you should also see a Git pane.</p>
+<p><img src="figs/rstudio_init.png" width="600"/></p>
+</div>
+<div id="gitignore" class="section level2 unnumbered callout">
+<h2 class="unnumbered callout"><code>.gitignore</code></h2>
+<p>Besides the desired <strong>RStudio Project</strong> file <code>r3-exercises.Rproj</code>, you should also see the <code>.gitignore</code>. This file describes files that <code>git</code> should ignore and so not prompt for asking. If you open the file in RStudio, you see it’s a simple text file listing hidden files (i.e. those starting with a <code>.</code> and not normally shown in Windows Explorer or Mac Finder) that RStudio uses.</p>
+<pre><code>.Rproj.user
+.Rhistory
+.RData
+.Ruserdata</code></pre>
+</div>
+<div id="simple-commit-push-of-r3-exercises" class="section level2">
+<h2><strong>Simple</strong> <code>commit</code> &amp; <code>push</code> of <em>r3-exercises</em></h2>
+<p>Note that in the <strong>Git</strong> pane, the yellow box question marks under <strong>Status</strong> next to <code>.gitignore</code> and <code>r3-exercises.Rproj</code> indicate these files are not known to the version control system (and asking should they be?). Ticking the boxes under <strong>Staged</strong> changes the <strong>Status</strong> to a turquoise <code>A</code> for added:</p>
+<p><img src="figs/rstudio_git-add-files.png" width="300"/></p>
+<p>Now click the <strong>Commit</strong> button in the Git pane to open the Review Changes dialog window. Every commit requires a message.</p>
+<p><img src="figs/rstudio_git-commit.png" width="500"/></p>
+<p>Click the <strong>Commit</strong> button in the Review Changes dialog window. You should see something like:</p>
+<p><img src="figs/rstudio_git-committed.png" width="500"/></p>
+<p>This is confirmation that these <code>2</code> files were changed with <code>17</code> new lines and the hash <code>8367334</code> uniquely identifies this commit. <strong>Close</strong> this dialog. Note how now “Your branch is ahead of ‘orgin/main’ by 1 commit”:</p>
+<p><img src="figs/rstudio_git-ahead-1-commit.png" width="500"/></p>
+<p>The previous <code>git commit</code> operation happened only on the local machine. The “origin” is Github and “main” referring to the main branch. Next, you need to <strong>Push</strong> these changes by clicking on the button in the upper right. You should get confirmation like:</p>
+<p><img src="figs/rstudio_git-pushed.png" width="500"/></p>
+<p>You should now see these two new files showing up in your repo at <code>https://github.com/USER/r3-exercises</code>. These files are displayed with the filename, most recent commit message associated with any changes and the time since last update.</p>
+<p><img src="figs/github_2-new-files.png" width="500"/></p>
+</div>
+<div id="create-index.rmd" class="section level2">
+<h2>Create <code>index.Rmd</code></h2>
+<p>Next we’ll create an Rmarkdown file and render it to html. By calling it <code>index.Rmd</code> and rendering to <code>index.html</code>, this will become the default web page of the repository since web servers serve <code>index.html</code> as the default for the folder.</p>
+<p>Rmarkdown files weave markdown text with chunks of R code to be evaluated and output content like tables and plots.</p>
+<p>In the RStudio menu choose <strong>File</strong> -&gt; <strong>New File</strong> -&gt; <strong>Rmarkdown…</strong>. Give it a Title like “R3 Exercises” and go with Default Output Format HTML.</p>
+<p><img src="figs/rstudio_new-rmd-doc-html.png" width="500"/></p>
+<p>After you click OK, <strong>File</strong> -&gt; <strong>Save as</strong> (or Ctrl + S) <code>index</code> (which will get named with the filename extension <code>index.Rmd</code>).</p>
+<p><img src="figs/rstudio_new-rmd-source.png" width="600"/></p>
+<p>Some initial text is already provided for you. Let’s go ahead and render to html by clicking the <strong>Knit</strong> button (highlighted with a pink box above).</p>
+<p><img src="figs/rstudio_new-rmd-rendered.png" width="600"/></p>
+<p>The <strong>Viewer</strong> pane now shows the rendered html. Also notice the unversioned files. Let’s get these onto our Github repo by going into the <strong>Git</strong> pane like previously, ticking the <strong>Staged</strong> boxes, clicking <strong>Commit</strong>, adding a message like “+ index”:</p>
+<p><img src="figs/rstudio_git-add-index.png" width="500"/></p>
+<p>Click on <strong>Commit</strong> in the dialog. Close the Git Commit window and then click on <strong>Push</strong> so your branch is not ahead of the origin Github.</p>
+<p>You should now see these two new index.* files showing up in your repo at <code>https://github.com/USER/r3-exercises</code>.</p>
+<p>We’ll get back to Rmarkdown, but first let’s get this website served up.</p>
+</div>
+<div id="setup-github-pages-website" class="section level2">
+<h2>Setup Github Pages website</h2>
+<p><a href="https://pages.github.com">Github Pages</a> allows you to serve up simple websites from your Github repo. Let’s turn on this feature by visiting the <strong>Settings</strong> tab in <code>https://github.com/USER/r3-exercises</code>. Then click the <strong>Pages</strong> menu from the left navbar, choose Branch: <strong>main</strong>, folder <strong>/ (root)</strong>:</p>
+<p><img src="figs/github_settings-pages.png" width="700"/></p>
+<p>Click <strong>Save</strong>. You should now see that the site is “ready to be published”:</p>
+<p><img src="figs/github_settings-pages-saved.png" width="700"/></p>
+<p>You should now be able to visit the website URL:</p>
+<ul>
+<li><code>https://USER.github.io/r3-exercises</code></li>
+</ul>
+<p>Notice how the URL is a slight rearrangement of your Github repo URL:</p>
+<ul>
+<li><code>https://github.com/USER/r3-exercises</code></li>
+</ul>
+<p>For easily referencing the website, I recommend returning to the Github repo <code>https://github.com/USER/r3-exercises</code>, clicking the upper right <strong>About</strong> cog and adding it to the <strong>Website</strong> entry:</p>
+<p><img src="figs/github_about-website.png" width="500"/></p>
+<p>You should now see a handy link to get to your website similar to this:</p>
+<p><img src="figs/github_about-website-saved.png" width="300"/></p>
+</div>
+<div id="contribute-to-r3-train-with-fork-pull-request" class="section level2">
+<h2><strong>Contribute</strong> to <em>r3-train</em> with <code>fork</code> &amp; <code>pull request</code></h2>
+<p>So far you’ve been using the <strong>Simple</strong> workflow with <code>git push</code> and <code>git pull</code> on your <em>USER/r3-exercises</em> repo. Next, you’ll learn how to contribute towards a repo for which you don’t have write permissions.</p>
+<p>You don’t have write permissions to the <em>noaa-iea/r3-train</em> repo where these training materials are stored. The task is to <strong>contribute</strong> to this repo with a single line of your information in <a href="https://github.com/noaa-iea/r3-train/blob/master/data/roster.csv"><code>data/roster.csv</code></a>, which gets used to generate the course <a href="https://noaa-iea.github.io/r3-train/roster.html">Roster</a>.</p>
+<p>To do so, please visit <a href="https://github.com/noaa-iea/r3-train">github.com/noaa-iea/r3-train</a> and in the upper right, click <strong>Fork</strong>:</p>
+<p><img src="figs/github_fork-repo.png" width="300"/></p>
+<p>Next, choose your Github USER name as the owner:</p>
+<p><img src="figs/github_fork-repo-owner.png" width="300"/></p>
+<p>Notice how the URL changed from <code>github.com/noaa-iea/r3-train</code> to <code>github.com/USER/r3-train</code>:</p>
+<p><img src="figs/github_fork-repo-done.png" width="300"/></p>
+<p>You now have <em>write</em> permissions on this repo. Please proceed with previous steps above to <strong>Create Github RStudio Project</strong>, except this time using <code>https://github.com/USER/r3-train.git</code> as the URL. Be sure to replace USER with your Github username. Also be sure to <code>clone</code> your <em>r3-train</em> repository into it’s own dedicated folder, NOT inside _your <em>r3-exercises</em> folder or any other existing git repo.</p>
+<p>Once you have the r3-train RStudio Project open, please open from the <strong>Files</strong> pane <code>data/roster.csv</code> by clicking on it and <strong>View File</strong>:</p>
+<p><img src="figs/rstudio_edit-roster-csv.png" width="700"/></p>
+<p>Enter your information at the end of the file instead of:</p>
+<pre><code>USER,FIRST LAST,https://USER.github.io/r3-exercises</code></pre>
+<p>Save the changes and in the <strong>Git</strong> pane tick the <strong>Staged</strong> box next to <code>data/roster.csv</code> showing a blue <code>M</code> for Modified. Click on <strong>Commit</strong> and enter a message like “+ USER” except swapping your Github username. <strong>Push</strong> the changes.</p>
+<p>In your browser return to <code>https://github.com/USER/r3-train</code>. You’ll notice that this branch is “1 commit ahead of noaa-iea:master”. Click on <strong>Contribute</strong>:</p>
+<p><img src="figs/github_contribute-pull-request.png" width="700"/></p>
+<p>Then click on <strong>Open pull request</strong>. You should be taken to a screen asking for confirmation:</p>
+<p><img src="figs/github_create-pull-request.png" width="700"/></p>
+<p>Click on <strong>Create pull request</strong>. Normally, you’d like a comment explaining what this pull request is for:</p>
+<p><img src="figs/github_create-pull-request-issue.png" width="700"/></p>
+<p>Click on the final <strong>Create pull request</strong>. Now you should be taken to <a href="https://github.com/noaa-iea/r3-train">github.com/noaa-iea/r3-train</a> (not your USER forked copy) and under the <strong>Pull requests</strong> see yours:</p>
+<p><img src="figs/github_pull-request-issue-admin-merge-option.png" width="700"/></p>
+<p>The image above shows a <strong>Merge pull request</strong> since I have admin privileges on this repo. You wouldn’t so would see it grayed out (or similar).</p>
+<p>Good job! Nothing left for you to do except wait for me (as admin of this repo) to click on <strong>Merge pull request</strong>. Then I’ll re-render <a href="https://github.com/noaa-iea/r3-train/blob/master/roster.Rmd">roster.Rmd</a> to <a href="https://noaa-iea.github.io/r3-train/roster.html">roster.html</a>.</p>
+</div>
+<div id="sandbox-r3-exercises-for-rmd-website-with-branch-merge" class="section level2">
+<h2><strong>Sandbox</strong> <em>r3-exercises</em> for Rmd website with <code>branch</code> &amp; <code>merge</code></h2>
+<p>Next, you’ll up your Git skills by isolating development of your code in a new <code>branch</code>, which is like a <strong>Sandbox</strong> separate from the <em>main</em> branch, while converting your website from a simple Rmarkdown to an <strong>Rmarkdown website</strong> for sharing a common navigation menu across created Rmarkdown web pages.</p>
+<p>Please switch back to your <strong><em>r3-exercises</em></strong> RStudio project where your website is hosted. (We’re done working with your forked copy of the <em>r3-train</em> project.) Notice that in the upper right of RStudio you get <strong>Project shortcuts</strong> to quickly navigate to them. Or you could always double-click on the <code>*.Rproj</code> file from your file explorer application (Windows Explorer or Mac Finder).</p>
+<p>In RStudio’s <strong>Git</strong> pane click on the <strong>New Branch</strong> button and enter a <strong>Branch Name</strong> like “rmd-website”:</p>
+<p><img src="figs/rstudio_new-branch.png" width="500"/></p>
+<p>Click <strong>Create</strong>. You should now see your new branch. Notice how when you click on the dropdown of branches you see both LOCAL and REMOTE: ORIGIN (as in on Github) versions.</p>
+<p><img src="figs/rstudio_new-branch-created.png" width="500"/></p>
+<p>Following guidance from <a href="https://bookdown.org/yihui/rmarkdown/rmarkdown-site.html">10.5 rmarkdown’s site generator | R Markdown: The Definitive Guide</a>, create a <code>_site.yml</code> by going to RStudio’s menu <strong>File</strong> -&gt; <strong>New File</strong> -&gt; <strong>Text File</strong> and paste the following:</p>
+<pre class="yaml"><code>name: &quot;R&lt;sup&gt;3&lt;/sup&gt;&quot;
+navbar:
+  title: &quot;R&lt;sup&gt;3&lt;/sup&gt; Exercises&quot;
+  left:
+    - text: &quot;Home&quot;
+      href: index.html
+    - text: &quot;Collaborate&quot;
+      href: collaborate.html
+output_dir: &quot;.&quot;</code></pre>
+<p><strong>Save</strong> this file as <code>_site.yml</code>. Next create overwrite your <code>index.Rmd</code> with this simpler content:</p>
+<pre class="markdown"><code>---
+title: &quot;Welcome&quot;
+---
+Hello, Website!</code></pre>
+<p>Add another page <code>collaborate.Rmd</code>:</p>
+<pre class="markdown"><code>---
+title: &quot;Collaborate&quot;
+---
+Like branches of a tree.</code></pre>
+<p>Finally, render the website by running the following in your R Console:</p>
+<pre class="r"><code>rmarkdown::render_site()</code></pre>
+<p>You might need to install the package <code>rmarkdown</code>, which you can do from RStudio’s <strong>Packages</strong> pane, <strong>Install</strong> button and typing “rmarkdown”.</p>
+<p>Once complete, you should see that you’re working from the new branch selected in your RStudio Git pane, then click on the file to be presented with options:</p>
+<p><img src="figs/rstudio_new-rmd-website-files.png" width="600"/></p>
+<p>Select <strong>View in Web Browser</strong> to open your new website locally:</p>
+<p><img src="figs/rmd-website-new.png" width="600"/></p>
+<p>Now you’re ready to <strong>Commit</strong> and <strong>Push</strong> your changes. Once you’ve done that, please visit <code>https://USER.github.io/r3-exercises</code>. Notice that it’s still the old default Rmarkdown page. Now visit <code>https://github.com/USER/r3-exercises</code> and at first it looks like the changes are not showing up, but now you simply need to select the <code>rmd-website</code> <strong>branch</strong> to see those files in their own little sandbox:</p>
+<p><img src="figs/github_rmd-website-show-branch.png" width="400"/></p>
+<p>Returning to RStudio, you’re ready to <code>git merge</code> the changes in the <code>rmd-website</code> branch to the <code>main</code> branch. In RStudio’s <strong>Git</strong> pane switch back to the <code>main</code> branch:</p>
+<p><img src="figs/rstudio_switch-to-main-branch.png" width="400"/></p>
+<p>You’ll probably see a warning like this:</p>
+<p><img src="figs/rstudio_warning-file-missing.png" width="300"/></p>
+<p>That’s OK. It’s just Rstudio saying that it doesn’t see this file in your filesystem anymore since we just switched to the <code>main</code> branch’s snapshot of files. Click <strong>Yes</strong> and proceed with closing any other files with a similar prompt.</p>
+<p>RStudio doesn’t provide a user interface to run the <code>git merge</code> command so you’ll have to do this in RStudio’s <strong>Terminal</strong> pane:</p>
+<p><img src="figs/rstudio_git-merge-branch.png" width="400"/></p>
+<p>by entering:</p>
+<pre class="bash"><code>git merge rmd-website</code></pre>
+<p>You’ve now merged your LOCAL changes from the <code>rmd-website</code> branch to the <code>main</code> branch, and see in the <strong>Git</strong> pane that “Your branch is ahead of ‘origin/main’ by 1 commit.” This means that you’re ready to <code>git push</code> them to the ORIGIN on Github by running good ol’ <strong>Push</strong>.</p>
+<p>Now at last you should see these file changes showing up at <code>https://github.com/USER/r3-exercises</code>.</p>
+<p>It might take a minute or so before they show up on your website at <code>https://USER.github.io/r3-exercises</code>. This is because Github Pages were originally designed to render static webpages with some templating capability (e.g. comman navigation menu) using Jekyll. To speed up rendering and disable Jekyll create an empty text file called <code>.nojekyll</code>. On a Mac, you can run this command in <strong>Terminal</strong>:</p>
+<pre><code>touch .nojekyll</code></pre>
+<p>Be sure to <strong>Commit</strong> and <strong>Push</strong> these changes to Github.</p>
+</div>
+<div id="create-an-issue-in-r3-exercises-to-resolve-a-file-conflict" class="section level2">
+<h2>Create an Issue in <em>r3-exercises</em> to resolve a file conflict</h2>
+<p>Next we’re going to play with some of the <a href="https://github.com/features/project-management/">Github Project management</a> features while learning how to resolve file conflicts when <code>git</code> has a conflict automatically merging competing commits.</p>
+<p>Let’s visit your Github repo <code>https://github.com/USER/r3-exercises</code> and click on <strong>Issues</strong>:</p>
+<p><img src="figs/github_issues.png" width="400"/></p>
+<p>Click on the green <strong>New issue</strong> button and enter a title and comment like:</p>
+<ul>
+<li>Title: “resolve a file conflict”</li>
+<li>Comment:</li>
+</ul>
+<pre class="markdown"><code>Reference:
+* [22.4 Dealing with conflicts | Happy Git and GitHub for the useR](https://happygitwithr.com/git-branches.html#dealing-with-conflicts)</code></pre>
+<p><img src="figs/github_new-issue.png" width="600"/></p>
+<p>When you switch the comment from <strong>Write</strong> to <strong>Preview</strong>, you’ll see how the <strong>markdown</strong> source gets formatted into html with a single item bulleted list and link. Now you’re ready to <strong>Submit new issue</strong>.</p>
+<p>Ok, let’s create file conflict by editing the same line in two different places: 1) the Github website through your web browser, 2) your local machine through RStudio.</p>
+<p>In your web browser, go to the <strong>Code</strong> tab of your Github repo at <code>https://github.com/USER/r3-exercises</code>. Click on <code>index.Rmd</code> and click the pencil icon to change it to:</p>
+<pre class="markdown"><code>---
+title: &quot;Welcome&quot;
+---
+Hello, Github!</code></pre>
+<p>Scroll down and notice enter a message under the <strong>Commit changes</strong> header of “edit from Github”:</p>
+<p><img src="figs/github_edit-from-Github.png" width="600"/></p>
+<p>Click on the green <strong>Commit changes</strong> button. Since you’re already on Github, you don’t need to <strong>Push</strong>.</p>
+<p>Now go to RStudio, open the <code>index.Rmd</code> and change it to:</p>
+<pre class="markdown"><code>---
+title: &quot;Welcome&quot;
+---
+Hello, RStudio!</code></pre>
+<p>Be sure to <strong>Commit</strong> those changes with the message “edit from RStudio”.</p>
+<p>Next, <strong>Pull</strong> changes from Github. Now you’ll get a long and messy message about a conflict like:</p>
+<pre><code>&gt;&gt;&gt; /usr/bin/git pull
+From https://github.com/bbest/r3-exercises
+   719143f..17f3524  main       -&gt; origin/main
+First, rewinding head to replay your work on top of it...
+Applying: edit from RStudio
+Using index info to reconstruct a base tree...
+M   index.Rmd
+Falling back to patching base and 3-way merge...
+Auto-merging index.Rmd
+CONFLICT (content): Merge conflict in index.Rmd
+error: Failed to merge in the changes.
+hint: Use &#39;git am --show-current-patch&#39; to see the failed patch
+Patch failed at 0001 edit from RStudio
+Resolve all conflicts manually, mark them as resolved with
+&quot;git add/rm &lt;conflicted_files&gt;&quot;, then run &quot;git rebase --continue&quot;.
+You can instead skip this commit: run &quot;git rebase --skip&quot;.
+To abort and get back to the state before &quot;git rebase&quot;, run &quot;git rebase --abort&quot;.</code></pre>
+<p>Close that. Now in the <strong>Git Commit</strong> dialog window, you’ll see:</p>
+<p><img src="figs/rstudio_git-conflict.png" width="600"/></p>
+<p>The orange <code>U</code> refers to an Unresolved conflict. We now need to “manually resolve this conflict”. The conflicted portions are compared above and below the <code>=======</code>. The conflict begins with <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</code> referring to the most recent commit from the ORIGIN on Github, versus ending with <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt; edit from RStudio</code> as the most recent LOCAL commit. Let’s change the entire contents of this file to:</p>
+<pre class="markdown"><code>---
+title: &quot;Welcome&quot;
+---
+Hello, everyone!</code></pre>
+<p>Then in the <strong>Git</strong> pane mark <code>index.Rmd</code> as Staged, <strong>Commit</strong> and enter the message “resolved file conflict; fixes #1”:</p>
+<p><img src="figs/rstudio_git-commit-cnflict-resolved-ref-issue.png" width="600"/></p>
+<p><strong>Commit</strong> this change and notice that we’re still “detached”:</p>
+<pre><code>[detached HEAD 216c243] resolved file conflict #1
+ 1 file changed, 1 insertion(+), 1 deletion(-)</code></pre>
+<p>Next, we need to associate the detached HEAD with a new temporary branch and reset the main branch with it before pushing changes back to Github. Please run the following commands in the RStudio <strong>Terminal</strong>:</p>
+<pre class="bash"><code># associate detached HEAD with new branch temp
+git checkout -b temp
+# reset master branch with temp branch as starting point
+git checkout -B main temp
+# delete temp branch
+git branch -d temp
+# update Github with local main
+git push origin main</code></pre>
+<p>For more details, see <a href="https://stackoverflow.com/questions/5772192/how-can-i-reconcile-detached-head-with-master-origin#answer-5772882">git - How can I reconcile detached HEAD with master/origin? - Stack Overflow</a>.</p>
+<p>Now visit <code>https://github.com/USER/r3-exercises/issues/1</code>. You’ll notice that your commit message automatically associated with that issue by simply including <code>#1</code> and closed it by prefixing the number with <code>fixes</code>.</p>
+<p>The point is to be able to associate specific line by line file changes with fixing <strong>bugs</strong> and implementing <strong>new features</strong> of our code.</p>
+</div>
+<div id="organize-issues-in-r3-exercises-github-project" class="section level2">
+<h2>Organize Issues in <em>r3-exercises</em> Github Project</h2>
+<p>Let’s create a couple <strong>Issues</strong> with the following titles to cue up next week’s session:</p>
+<ul>
+<li><code>read a csv and output a table</code></li>
+<li><code>read a wide csv and output a long table</code></li>
+</ul>
+<p>You should then see these at <code>https://github.com/USER/r3-exercises/issues</code>:</p>
+<p><img src="figs/github_plus-two-issues.png" width="600"/></p>
+<p>Now visit the <strong>Projects</strong> tab, so <code>https://github.com/USER/r3-exercises/projects</code>:</p>
+<p><img src="figs/github_projects.png" width="600"/></p>
+<p>And click the <strong>Create new project</strong> button.</p>
+<p><img src="figs/github_new-project.png" width="600"/></p>
+<p>Choose the <strong>Automated kanban</strong> style and a title like “management” before clicking <strong>Create project</strong>. You’ll next be presented with options to drag existing issues over into any of the columns: <strong>To do</strong>, <strong>In progress</strong> or <strong>Done</strong>:</p>
+<p><img src="figs/github_new-project-init.png" width="600"/></p>
+<p>Drag the two issues over into <strong>In progress</strong> in the order of priority top to bottom:</p>
+<p><img src="figs/github_new-project-issues-dragged.png" width="600"/></p>
+<p>A Project board helps answer the question, “What do I need to work on next?”</p>
+</div>
+<div id="further-reading" class="section level2 unnumbered">
+<h2 class="unnumbered">Further Reading</h2>
+<div id="git-github" class="section level3 unnumbered">
+<h3 class="unnumbered">Git &amp; Github</h3>
+<ul>
+<li><a href="https://guides.github.com/">GitHub Guides</a></li>
+<li><a href="http://swcarpentry.github.io/git-novice/">Version Control with Git</a></li>
+<li><a href="https://rfortherestofus.com/2021/02/how-to-use-git-github-with-r/">How to Use Git/GitHub with R</a></li>
+</ul>
+</div>
+<div id="rstudio-with-git-github" class="section level3 unnumbered">
+<h3 class="unnumbered">RStudio with Git &amp; Github</h3>
+<ul>
+<li><a href="https://happygitwithr.com/">Happy Git and GitHub for the useR</a></li>
+<li><a href="https://r-pkgs.org/git.html">Chapter 18 Git and GitHub | R Packages</a></li>
+<li><a href="https://support.rstudio.com/hc/en-us/articles/200532077-Version-Control-with-Git-and-SVN">Version Control with Git and SVN – RStudio Support</a></li>
+<li><a href="https://support.rstudio.com/hc/en-us/articles/200526207-Using-Projects">Using RStudio Projects – RStudio Support</a></li>
+</ul>
+</div>
+<div id="rmarkdown" class="section level3 unnumbered">
+<h3 class="unnumbered">Rmarkdown</h3>
+<ul>
+<li><a href="https://rmarkdown.rstudio.com/lesson-1.html?_ga=2.141207218.1461543799.1623615738-155442495.1623419383">Lesson 1 | Rmarkdown</a></li>
+<li><a href="https://www.rstudio.com/resources/webinars/getting-started-with-r-markdown/">Getting started with R Markdown - RStudio</a></li>
+<li><a href="https://www.rstudio.com/resources/webinars/reproducible-reporting/">Reproducible Reporting - RStudio</a></li>
+<li><a href="https://bookdown.org/yihui/rmarkdown/">R Markdown: The Definitive Guide</a></li>
+</ul>
+<div id="rmarkdown-websites" class="section level4 unnumbered">
+<h4 class="unnumbered">Rmarkdown websites</h4>
+<ul>
+<li><a href="https://bookdown.org/yihui/rmarkdown/rmarkdown-site.html">10.5 rmarkdown’s site generator | R Markdown: The Definitive Guide</a></li>
+<li><a href="https://www.emilyzabor.com/tutorials/rmarkdown_websites_tutorial.html">Creating websites in R</a></li>
+<li><a href="https://jules32.github.io/rmarkdown-website-tutorial/">Making free websites with RStudio’s R Markdown</a></li>
+</ul>
+</div>
+</div>
+</div>
 
 
 
